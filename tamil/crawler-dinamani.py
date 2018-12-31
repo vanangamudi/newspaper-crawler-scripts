@@ -6,7 +6,7 @@ from tqdm import tqdm
 from bs4 import BeautifulSoup as bs
 import requests
 import sys
-
+import time
 from pprint import pprint, pformat
 FORMAT_STRING = "%(levelname)-8s:%(name)-8s.%(funcName)-8s>> %(message)s"
 
@@ -102,8 +102,9 @@ def extract_year_month(page_link, soup):
     if m:
         log.debug(pformat(m))
         month, year = m.groups()
-        for d in SUBDIRS:
-            mkdir('{}/{}/{}'.format(d, year, month))
+        
+    for d in SUBDIRS:
+        mkdir('{}/{}/{}'.format(d, year, month))
             
     return year, month
 
@@ -124,7 +125,7 @@ def process_page(page_name, soup):
         year, month = extract_year_month(page_name, soup)
         log.info('year, month = {}, {}'.format(year, month))
 
-        m = re.search('{}\/([^\/]+)\/.*\/.*\/([^\/]+.+).html'.format(ROOT_URL), page_name)
+        m = re.search('{}\/([^\/]+)\/.*\/.*\/.*-(\d+).html'.format(ROOT_URL), page_name)
         if m:
             log.debug(pformat(m))
             class_label, name = m.groups()
@@ -137,11 +138,11 @@ def process_page(page_name, soup):
         paras = content.findAll('p')
         log.debug(pformat(paras))
         path_suffix = '{}/{}/{}.txt'.format(year, month, name)
-        with open('{}/{}.txt'.format(ARTICLES_DIR, path_suffix), 'w') as f:
+        with open('{}/{}'.format(ARTICLES_DIR, path_suffix), 'w') as f:
             f.write('{}\n------------------\n'.format(page_name))
             f.write('\n'.join(p.text for p in paras))
             
-        with open('{}/{}.txt'.format(ABSTRACTS_DIR, path_suffix), 'w') as f:
+        with open('{}/{}'.format(ABSTRACTS_DIR, path_suffix), 'w') as f:
             f.write('{}\n------------------\n'.format(page_name))
             f.write(paras[0].text)
             
@@ -193,7 +194,7 @@ if __name__ == '__main__':
                     log.debug(pformat(LINKS))
 
                     process_page(page_name, soup)
-
+                    if CRAWLED_PAGE_COUNT % 100: time.sleep(1)
                 except KeyboardInterrupt:
                     with open(VISITED_LINKS_FILEPATH, 'w') as f:
                         f.write('\n'.join(VISITED_LINKS))
