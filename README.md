@@ -9,6 +9,7 @@ Set of scripts for crawling newspaper websites. Please find the available script
 | Dailythanthi       | http://dailythanthi.com/       | tamil/crawler-dailythanthi.py        |
 | Tamil The Hindu    | http://tamil.thehindu.com/     | tamil/crawler-tamil-hindu.py         |
 | Puthiyathalaimurai | http://puthiyathalaimurai.com/ |  tamil/crawler-puthiyathalaimurai.py |
+| Dinamani           | http://dinamani.com/           |  tamil/crawler-dinamani.py           |
 
 ## Contribute
 Scripts for more news websites are welcome. Please save the text scraped in UTF-8 encoding.
