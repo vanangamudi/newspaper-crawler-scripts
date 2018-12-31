@@ -17,7 +17,7 @@ log.setLevel(logging.INFO)
 
 MAX_COUNT = 1000000000000
 
-ROOT_DIR = 'puthiyathalaimurai'
+ROOT_DIR = 'dinamani'
 
 LINKS_FILEPATH         = '{}/links.list'.format(ROOT_DIR)
 VISITED_LINKS_FILEPATH = '{}/visited-links.list'.format(ROOT_DIR)
@@ -29,7 +29,7 @@ COMMENTS_DIR           = '{}/comments'          .format(ROOT_DIR)
 
 HTTP = 'http://'
 HTTPS = 'https://'
-ROOT_URL = 'www.puthiyathalaimurai.com'
+ROOT_URL = 'www.dinamani.com'
 
 
 CRAWLED_PAGE_COUNT = 0
@@ -94,11 +94,11 @@ name = '{}'.format(uid_)
 def extract_year_month(page_link, soup):
     global uid_
     year, month = '0000', '00'
-    timestamp = soup.find(class_='article-author')
+    timestamp = soup.find(class_='ArticlePublish')
 
-    timestamp = timestamp.find(class_='pull-right')
+    timestamp = timestamp.find_all('span')[1]
     log.info(timestamp.text)
-    m = re.search('Published.*:.* (\w+), (\d+).*m', timestamp.text)
+    m = re.search(' (\w+) (\d{4}).*M', timestamp.text.strip())
     if m:
         log.debug(pformat(m))
         month, year = m.groups()
@@ -115,7 +115,7 @@ def process_page(page_name, soup):
     for script in soup(["script", "style"]): 
         script.extract()
 
-    content = soup.find_all(class_='single-news-desc-panel')[1]
+    content = soup.find(id='storyContent')
     if not content:
         log.error('content extraction failed')
         log.error('{}'.format(page_name))
@@ -124,7 +124,7 @@ def process_page(page_name, soup):
         year, month = extract_year_month(page_name, soup)
         log.info('year, month = {}, {}'.format(year, month))
 
-        m = re.search('{}\/news\/(.*)\/(.*).html'.format(ROOT_URL), page_name)
+        m = re.search('{}\/([^\/]+)\/.*\/.*\/([^\/]+.+).html'.format(ROOT_URL), page_name)
         if m:
             log.debug(pformat(m))
             class_label, name = m.groups()
@@ -145,13 +145,13 @@ def process_page(page_name, soup):
             f.write('{}\n------------------\n'.format(page_name))
             f.write(paras[0].text)
             
-        title = soup.find('h1', class_='main-image-header')
+        title = soup.find('h1', class_='ArticleHead')
         log.info(title.text)
 
-        breadcrumbs = soup.find('ul', class_='breadcrumbs-list')
-        log.info(breadcrumbs.text.replace('\n', '').replace('\r', ''))
-        breadcrumbs = breadcrumbs.text.strip().replace('\n', '').replace('\r', '')
-
+        breadcrumbs = soup.find(class_='bcrums').findAll('a')
+        breadcrumbs = ','.join([b.text.replace('\n', '').replace('\r', '')
+                                for b in breadcrumbs])
+        log.info(breadcrumbs)
         record = '{}|{}|{}|{}'.format(path_suffix, title.text,
                                       class_label, breadcrumbs)
         title_file.write(record + '\n')
