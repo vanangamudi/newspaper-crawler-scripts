@@ -1,5 +1,8 @@
 # newspaper-crawler-scripts
-set of scripts for crawling newspaper websites primarily for tamil news
+set of scripts for crawling newspaper websites.
+
+## Contribute
+Scripts for more news websites are welcome. Please save the text scraped in UTF-8 encoding.
 
 ## Todo
 [ ] Extract common code into a decorator
