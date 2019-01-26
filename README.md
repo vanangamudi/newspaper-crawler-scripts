@@ -12,7 +12,7 @@ Set of scripts for crawling newspaper websites. Please find the available script
 | Dinamani           | http://dinamani.com/           |  tamil/crawler-dinamani.py           |
 
 ## Contribute
-Scripts for more news websites are welcome. Please save the text scraped in UTF-8 encoding.
+Scripts for more news websites are welcome. Please save the text scraped in UTF-8 encoding. Please refer to the [newspapers list file](https://github.com/vanangamudi/newspaper-crawler-scripts/blob/master/newspapers.csv) and pick one to scrape.
 
 ## Todo
 [ ] Extract common code into a decorator
