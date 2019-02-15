@@ -85,8 +85,15 @@ def punct_tokenize(line):
     return [word for word in words if word]
             
 if __name__ == '__main__':
+    
+    parser = argparse.ArgumentParser(description='compile all articles into a single text file')
+    parser.add_argument('-o','--output-file',
+                        help='path to the output file',
+                        default='a.out', dest='dest_file')
+    
+    args = parser.parse_args()
 
-    dest_file = open('lm.txt', 'w')
+    dest_file = open(args.dest_file, 'w')
     counter = Counter()
     for f in tqdm(glob(r'*/*/*/*/*.txt')):
         with open(f) as f:
