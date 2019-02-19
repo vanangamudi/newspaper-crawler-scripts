@@ -8,14 +8,17 @@ import requests
 import sys
 import time
 from pprint import pprint, pformat
-FORMAT_STRING = "%(levelname)-8s:%(name)-8s.%(funcName)-8s>> %(message)s"
+import config
 
-import logging
-logging.basicConfig(format=FORMAT_STRING)
-log = logging.getLogger(__name__)
-log.setLevel(logging.CRITICAL)
 
 from crawler import Crawler, mkdir
+from aliases import GregorianMonthInTamilAlias as MonthAlias
+
+import logging
+logging.basicConfig(format=config.CONFIG.FORMAT_STRING)
+log = logging.getLogger(__name__)
+log.setLevel(config.CONFIG.LOGLEVEL)
+
 
 uid_ = 0
 name = '{}'.format(uid_)
@@ -26,22 +29,24 @@ class ViduthalaiCrawler(Crawler):
         root_dir = os.path.basename(__file__).replace('crawler-', '').replace('.py', '')
         super().__init__(root_url = root_url,
                          root_dir= root_dir)
+
+        self.month_alias = MonthAlias()
         
     def extract_year_month(self, page_link, soup):
         global uid_
         year, month = '0000', '00'
-        timestamp = soup.find(class_='date')
 
-        timestamp = timestamp.find(class_='created')
-        log.info(timestamp.text)
-        m = re.search('.*, \d+ (.*) (\d{4})', timestamp.text.strip())
-        if m:
-            log.debug(pformat(m))
-            month, year = m.groups()
-
-        for d in self.SUBDIRS:
-            mkdir('{}/{}/{}'.format(d, year, month))
-
+        try:
+            timestamp = soup.find(class_='date')
+            timestamp = timestamp.find(class_='created')
+            log.info(timestamp.text)
+            m = re.search('.*, \d+ (.*) (\d{4})', timestamp.text.strip())
+            if m:
+                log.debug(pformat(m))
+                month, year = m.groups()
+        except:
+            log.exception()
+            
         return year, month
 
     def process_page(self, page_name, soup):
@@ -75,8 +80,12 @@ class ViduthalaiCrawler(Crawler):
             log.debug(content)
             paras = content.findAll('p')  ; log.debug(pformat(paras))
 
-            path_suffix = '{}/{}/{}.txt'.format(year, month, name)
+            path_suffix = '{}/{}/{}.txt'.format(year, self.month_alias[month], name)
 
+            for d in self.SUBDIRS:
+                mkdir('{}/{}/{}'.format(d, year, self.month_alias[month]))
+
+            
             page_content  = '\n'.join(p.text for p in paras)
             page_abstract = paras[0].text
             title         = soup.find(class_='headline')
