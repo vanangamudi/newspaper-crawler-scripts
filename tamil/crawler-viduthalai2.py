@@ -11,7 +11,7 @@ from pprint import pprint, pformat
 import config
 
 
-from crawler import Crawler, mkdir
+from crawler import Crawler, mkdir, verbose
 from aliases import GregorianMonthInTamilAlias as MonthAlias
 
 import logging
@@ -73,16 +73,16 @@ class ViduthalaiCrawler(Crawler):
 
         if not content:
             log.error('content extraction failed')
-            print('content extraction failed')
+            verbose('content extraction failed')
             log.error('{}'.format(page_name))
             raise Exception
         else:
-            print(' Content:=')
-            print('  size: {}'.format(len(content)))        
+            verbose(' Content:=')
+            verbose('  size: {}'.format(len(content)))        
             year, month = self.extract_year_month(page_name, soup)
             log.info('year, month = {}, {}'.format(year, month))
 
-            print('  year/month: {}/{}'.format(year, month))
+            verbose('  year/month: {}/{}'.format(year, month))
             m = re.search('{}\/.*\/([^\/]+).html'.format(self.ROOT_URL), page_name)
             if m:
                 log.debug(pformat(m))

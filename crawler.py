@@ -32,6 +32,12 @@ PREFIX = '{}/{}'.format(os.path.dirname(__file__), 'data')
 def verbose(*args, **kwargs):
     if config.CONFIG.VERBOSE:
         print(*args, **kwargs)
+
+
+def remove_everything_after_hashquestion(url):
+    url = url.split('?')[0]
+    url = url.split('#')[0]
+    return url
     
 class Crawler(object):
 
@@ -75,15 +81,20 @@ class Crawler(object):
         self.VISITED_LINKS = set()
         try:
             with open(self.VISITED_LINKS_FILEPATH, 'r') as f:
-                self.VISITED_LINKS = set(f.readlines())
+                self.VISITED_LINKS = set(
+                    remove_everything_after_hashquestion(i) for i in f.readlines()
+                )
+                
         except FileNotFoundError:
             open(self.VISITED_LINKS_FILEPATH, 'w').close()
 
         try:
             with open(self.LINKS_FILEPATH, 'r') as f:
                 links = list(set(f.readlines()))
-                self.LINKS.extend(i for i in links if i not in self.VISITED_LINKS)
-                self.LINKS = [l for l in self.LINKS if self.url_filter(l)]
+                for i in links:
+                    i = remove_everything_after_hashquestion(i)
+                    if  i not in self.VISITED_LINKS and self.url_filter(i):
+                        self.LINKS.append(i)
                 
         except FileNotFoundError:
             open(self.LINKS_FILEPATH, 'w').close()
@@ -100,8 +111,7 @@ class Crawler(object):
                   for a in soup.find_all('a', href=True)]
 
         for i in links_:
-            i = i.split('?')[0]
-            i = i.split('#')[0]
+            i = remove_everything_after_hashquestion(i)
             if i not in self.VISITED_LINKS and self.url_filter(i):
                 self.LINKS.append(i)
             
@@ -142,7 +152,7 @@ class Crawler(object):
                 verbose('=========')
                 print('  Elapsed: {} :  Crawled Count: {}'.format(self.elapsed_period(),
                                                                   self.CRAWLED_PAGE_COUNT),
-                      end='\r')
+                      end='\r' if config.CONFIG.VERBOSE else '\n')
 
                 log.info('processing: {}'.format(current_link))
                 verbose('processing: {}'.format(current_link))
