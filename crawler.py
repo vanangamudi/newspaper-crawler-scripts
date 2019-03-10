@@ -75,7 +75,7 @@ class Crawler(object):
         self.SUBDIRS       = self.DIRS[1:]
     
         self.CRAWLED_PAGE_COUNT = 0
-        self.MAX_COUNT = 10000000000000000000000
+        self.MAX_COUNT = 1000000000
         
     def initialize_dir_structure(self):
         log.info('creating subdirs')
@@ -218,6 +218,7 @@ class Crawler(object):
 
 
 import threading
+import stacktracer
 class MultiThreadedCrawler(Crawler):
 
     def __init__(self, root_url, root_dir='', prefix=PREFIX, num_threads=12):
@@ -238,17 +239,28 @@ class MultiThreadedCrawler(Crawler):
                 t = threading.Thread(target=self.crawl_, args=(i,))
                 threads.append(t)
                 t.start()
+
+            all_threads_finished = False
+            while not all_threads_finished:
+                alive_threads = 0
+                for t in threads:
+                    if t.is_alive():
+                        alive_threads += 1
+
+                        
+                print('{} - live threads {}'.format(time.strftime("%Y-%m-%d %H:%M:%S"), alive_threads))
                 
-            for t in threads:
-                verbose('joining thread {}'.format(t))
-                t.join()
-                    
+                if alive_threads == 0:
+                    all_threads_finished = True
+                else:
+                    time.sleep(alive_threads * 20)
         except:
             log.exception('main thread')
-            self.lock.acquire()
-            self.title_file.close()            
-            self.write_state()
-            self.lock.release()
+
+        self.lock.acquire()
+        self.title_file.close()            
+        self.write_state()
+        self.lock.release()
 
         
     def crawl_(self, cold_start_wait=1):
