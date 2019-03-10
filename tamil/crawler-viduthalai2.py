@@ -97,9 +97,9 @@ class ViduthalaiCrawler(Crawler):
 
             
             page_content  = '\n'.join(p.text for p in paras)
-            page_abstract = paras[0].text
+            page_abstract = paras[0].text.strip()
             title         = soup.find(class_='headline')
-            record        = '{}|{}'.format(path_suffix, title.text)
+            record        = '{}|{}'.format(path_suffix.strip(), title.text.strip())
 
             log.info(title.text)
 
