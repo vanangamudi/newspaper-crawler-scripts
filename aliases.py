@@ -45,7 +45,7 @@ class GregorianMonthInTamilAlias(AliasBase):
         ,'மே'
         ,'ஜூன்'
         ,'ஜூலை'
-        ,'ஆகஸ்ட'
+        ,'ஆகஸ்ட்'
         ,'செப்டம்பர்'
         ,'அக்டோபர்'
         ,'நவம்பர்'
