@@ -45,8 +45,13 @@ class Crawler(object):
     def __init__(self, root_url, root_dir='', prefix=PREFIX):
 
         verbose(prefix)
+        
         self.ROOT_URL = root_url
         if root_dir:
+            root_dir = '/'.join(root_dir.split('/')[-2:])
+            root_dir = root_dir.replace('crawler-', '').replace('.py', '')
+            print('root directory for storing data is {}'.format(root_dir))
+        
             self.ROOT_DIR = root_dir
         else:
             self.ROOT_DIR = self.ROOT_URL.replace(HTTPS,'').replace(HTTP, '').split('/')[0]

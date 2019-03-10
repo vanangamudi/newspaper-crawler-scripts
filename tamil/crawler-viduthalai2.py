@@ -27,10 +27,6 @@ class ViduthalaiCrawler(Crawler):
 
     def __init__(self, root_url):
         root_dir= os.path.abspath(__file__)
-        root_dir = '/'.join(root_dir.split('/')[-2:])
-        root_dir = root_dir.replace('crawler-', '').replace('.py', '')
-
-        print('root directory for storing data is {}'.format(root_dir))
         
         super().__init__(root_url = root_url,
                          root_dir= root_dir)
