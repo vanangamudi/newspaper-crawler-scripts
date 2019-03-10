@@ -226,24 +226,34 @@ class MultiThreadedCrawler(Crawler):
 
 
     def crawl(self):
+
         self.title_file = open(self.TITLE_LIST_FILEPATH, 'a')
 
         threads = []
         self.lock = threading.Lock()
-        for i in range(self.NUM_THREADS):
-            verbose('starting thread {}'.format(i))
-            t = threading.Thread(target=self.crawl_)
-            threads.append(t)
-            t.start()
-
-        for t in threads:
-            verbose('joining thread {}'.format(t))
-            t.join()
-            
-
-    def crawl_(self):
-        break_loop = False
         self.start_time = time.time()
+        try:
+            for i in range(self.NUM_THREADS):
+                verbose('starting thread {}'.format(i))
+                t = threading.Thread(target=self.crawl_, args=(i,))
+                threads.append(t)
+                t.start()
+                
+            for t in threads:
+                verbose('joining thread {}'.format(t))
+                t.join()
+                    
+        except:
+            log.exception('main thread')
+            self.lock.acquire()
+            self.title_file.close()            
+            self.write_state()
+            self.lock.release()
+
+        
+    def crawl_(self, cold_start_wait=1):
+        break_loop = False
+        time.sleep(cold_start_wait)
         try:
             while not break_loop:
                 current_link = self.LINKS.pop(0).strip()
@@ -296,6 +306,7 @@ class MultiThreadedCrawler(Crawler):
                         self.lock.acquire()
                         
                         self.title_file.write(metadata_record + '\n')
+                        #self.title_file.flush()
                         self.CRAWLED_PAGE_COUNT += 1
                         if len(self.LINKS) < 1 and self.CRAWLED_PAGE_COUNT > self.MAX_COUNT:
                             break_loop = True
@@ -317,10 +328,4 @@ class MultiThreadedCrawler(Crawler):
         except:
             log.exception('###############')
             
-        self.lock.acquire()
-        
-        self.title_file.close()
-        self.write_state()
-        
-        self.lock.release()
             
