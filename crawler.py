@@ -29,17 +29,21 @@ def mkdir(path):
 
 PREFIX = '{}/{}'.format(os.path.dirname(__file__), 'data')
 
+def verbose(*args, **kwargs):
+    if config.CONFIG.VERBOSE:
+        print(*args, **kwargs)
+    
 class Crawler(object):
 
 
     def __init__(self, root_url, root_dir='', prefix=PREFIX):
 
-        print(prefix)
+        verbose(prefix)
         self.ROOT_URL = root_url
         if root_dir:
             self.ROOT_DIR = root_dir
         else:
-            self.ROOT_DIR = ROOT_URL.replace(HTTPS).replace(HTTP).split('/')[0]
+            self.ROOT_DIR = self.ROOT_URL.replace(HTTPS,'').replace(HTTP, '').split('/')[0]
         
         self.LINKS_FILEPATH         = '{}/{}/links.list'         .format(prefix, self.ROOT_DIR)
         self.VISITED_LINKS_FILEPATH = '{}/{}/visited-links.list' .format(prefix, self.ROOT_DIR)
@@ -50,7 +54,6 @@ class Crawler(object):
 
         self.LINKS         = [
             HTTP + self.ROOT_URL,
-            'viduthalai.in/home/world-news/103-world-general/176740-2019-02-14-10-09-11.html',
         ]
         
         self.VISITED_LINKS = set()
@@ -61,7 +64,7 @@ class Crawler(object):
         self.SUBDIRS       = self.DIRS[1:]
     
         self.CRAWLED_PAGE_COUNT = 0
-        self.MAX_COUNT = 1000000000000
+        self.MAX_COUNT = 10000000000000000000000
         
     def initialize_dir_structure(self):
         log.info('creating subdirs')
@@ -78,7 +81,10 @@ class Crawler(object):
 
         try:
             with open(self.LINKS_FILEPATH, 'r') as f:
-                self.LINKS.extend(list(set(f.readlines())))
+                links = list(set(f.readlines()))
+                self.LINKS.extend(i for i in links if i not in self.VISITED_LINKS)
+                self.LINKS = [l for l in self.LINKS if self.url_filter(l)]
+                
         except FileNotFoundError:
             open(self.LINKS_FILEPATH, 'w').close()
 
@@ -89,13 +95,17 @@ class Crawler(object):
             log.debug('returning true')
             return True
 
-    def extract_links(self, soup, LINKS, VISITED_LINKS):
+    def extract_links(self, soup):
         links_ = [a.get('href')
                   for a in soup.find_all('a', href=True)]
 
-        LINKS.extend([i for i in links_ if i not in VISITED_LINKS])
-        LINKS = list(set(LINKS))
-        return LINKS
+        for i in links_:
+            i = i.split('?')[0]
+            i = i.split('#')[0]
+            if i not in self.VISITED_LINKS and self.url_filter(i):
+                self.LINKS.append(i)
+            
+        return self.LINKS
 
     def extract_year_month(self):
         raise NotImplemented
@@ -114,17 +124,28 @@ class Crawler(object):
 
     def url_filter(self, url):
         return True
-    
+
+    def elapsed_period(self):
+        end = time.time()
+        hours, rem = divmod(end-self.start_time, 3600)
+        minutes, seconds = divmod(rem, 60)
+        return "{:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds)
+        
     def crawl(self):
         title_file = open(self.TITLE_LIST_FILEPATH, 'a')
+        self.start_time = time.time()
         try:
             while len(self.LINKS) > 0 and self.CRAWLED_PAGE_COUNT < self.MAX_COUNT:
 
                 current_link = self.LINKS.pop(0).strip()
                 current_link = urllib.parse.unquote(current_link)
-                print('=========')
+                verbose('=========')
+                print('  Elapsed: {} :  Crawled Count: {}'.format(self.elapsed_period(),
+                                                                  self.CRAWLED_PAGE_COUNT),
+                      end='\r')
+
                 log.info('processing: {}'.format(current_link))
-                print('processing: {}'.format(current_link))
+                verbose('processing: {}'.format(current_link))
 
                 if not self.url_check(current_link):
                     current_link = HTTP + self.ROOT_URL + current_link
@@ -142,18 +163,17 @@ class Crawler(object):
                         soup = bs(page.content, 'html.parser')
 
                         # extract links
-                        self.LINKS = self.extract_links(soup, self.LINKS, self.VISITED_LINKS)
-                        self.LINKS = [l for l in self.LINKS if self.url_filter(l)]
+                        self.extract_links(soup)
                         
                         log.info('LINKS count:= {}'.format(len(self.LINKS)))
-                        print(' Number to links:=')
-                        print('  To be visited: {}'.format(len(self.LINKS)))
-                        print('  Visited Links: {}'.format(len(self.VISITED_LINKS)))
-                        print('  Crawled Count: {}'.format(self.CRAWLED_PAGE_COUNT))                        
+                        verbose(' Number to links:=')
+                        verbose('  To be visited: {}'.format(len(self.LINKS)))
+                        verbose('  Visited Links: {}'.format(len(self.VISITED_LINKS)))
+                        verbose('  Crawled Count: {}'.format(self.CRAWLED_PAGE_COUNT))                        
                         log.debug(pformat(self.LINKS))
 
                         path_suffix, metadata_record, contents = self.process_page(current_link, soup)
-                        print('  path: {}'.format(path_suffix))
+                        verbose('  path: {}'.format(path_suffix))
                         for dir_, content in contents.items():
                             with open('{}/{}'.format(dir_, path_suffix), 'w') as f:
                                 f.write('{}'.format(current_link))
@@ -167,27 +187,125 @@ class Crawler(object):
                             time.sleep(1)
                         
                     except KeyboardInterrupt:
-                        with open(self.VISITED_LINKS_FILEPATH, 'w') as f:
-                            f.write('\n'.join(self.VISITED_LINKS))
-
-                        with open(self.LINKS_FILEPATH, 'w') as f:
-                            f.write('\n'.join(self.LINKS))
-
                         raise KeyboardInterrupt
 
                     except:
                         log.exception(current_link)
-                        with open(self.VISITED_LINKS_FILEPATH, 'w') as f:
-                            f.write('\n'.join(self.VISITED_LINKS))
+                        self.write_state()
                 else:
                     log.info('already visited {}'.format(current_link))
-                    print('already visited')
+                    verbose('already visited')
 
         except:
             log.exception('###############')
             title_file.close()
-            with open(self.VISITED_LINKS_FILEPATH, 'w') as f:
-                f.write('\n'.join(self.VISITED_LINKS))
+            self.write_state()
 
-            with open(self.LINKS_FILEPATH, 'w') as f:
-                f.write('\n'.join(self.LINKS))
+
+import threading
+class MultiThreadedCrawler(Crawler):
+
+    def __init__(self, root_url, root_dir='', prefix=PREFIX, num_threads=12):
+        super().__init__(root_url, root_dir, prefix)
+        self.NUM_THREADS = num_threads
+
+
+    def crawl(self):
+        self.title_file = open(self.TITLE_LIST_FILEPATH, 'a')
+
+        threads = []
+        self.lock = threading.Lock()
+        for i in range(self.NUM_THREADS):
+            verbose('starting thread {}'.format(i))
+            t = threading.Thread(target=self.crawl_)
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            verbose('joining thread {}'.format(t))
+            t.join()
+            
+
+    def crawl_(self):
+        break_loop = False
+        self.start_time = time.time()
+        try:
+            while not break_loop:
+                current_link = self.LINKS.pop(0).strip()
+                current_link = urllib.parse.unquote(current_link)
+                verbose('=========')
+                print('  Elapsed: {} :  Crawled Count: {}'.format(self.elapsed_period(),
+                                                                  self.CRAWLED_PAGE_COUNT),
+                      end='\r')
+                
+                log.info('processing: {}'.format(current_link))
+                verbose('processing: {}'.format(current_link))
+
+                if not self.url_check(current_link):
+                    current_link = HTTP + self.ROOT_URL + current_link
+
+                if current_link not in self.VISITED_LINKS:
+                    if self.CRAWLED_PAGE_COUNT > self.MAX_COUNT:
+                        break
+                    
+                    self.lock.acquire()
+                    self.VISITED_LINKS.add(current_link)
+                    self.lock.release()
+                    
+                    try:
+                        log.info('crawl_count: {}'.format(self.CRAWLED_PAGE_COUNT))
+                        # access current link content
+                        page = requests.get('{}'.format(current_link))
+                        soup = bs(page.content, 'html.parser')
+
+                        # extract links
+                        self.lock.acquire()
+                        self.extract_links(soup)
+                        self.lock.release()
+                        
+                        log.info('LINKS count:= {}'.format(len(self.LINKS)))
+                        verbose(' Number to links:=')
+                        verbose('  To be visited: {}'.format(len(self.LINKS)))
+                        verbose('  Visited Links: {}'.format(len(self.VISITED_LINKS)))
+                        verbose('  Crawled Count: {}'.format(self.CRAWLED_PAGE_COUNT))                        
+                        log.debug(pformat(self.LINKS))
+
+                        path_suffix, metadata_record, contents = self.process_page(current_link, soup)
+                        verbose('  path: {}'.format(path_suffix))
+                        for dir_, content in contents.items():
+                            with open('{}/{}'.format(dir_, path_suffix), 'w') as f:
+                                f.write('{}'.format(current_link))
+                                f.write('\n------------------\n')
+                                f.write(content)
+
+                        self.lock.acquire()
+                        
+                        self.title_file.write(metadata_record + '\n')
+                        self.CRAWLED_PAGE_COUNT += 1
+                        if len(self.LINKS) < 1 and self.CRAWLED_PAGE_COUNT > self.MAX_COUNT:
+                            break_loop = True
+                    
+                        self.lock.release()
+                        
+                    except KeyboardInterrupt:
+                        raise KeyboardInterrupt
+
+                    except:
+                        log.exception(current_link)
+                        self.lock.acquire()
+                        self.write_state()
+                        self.lock.release()
+                else:
+                    log.info('already visited {}'.format(current_link))
+                    verbose('already visited')
+
+        except:
+            log.exception('###############')
+            
+        self.lock.acquire()
+        
+        self.title_file.close()
+        self.write_state()
+        
+        self.lock.release()
+            
