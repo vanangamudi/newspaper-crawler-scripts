@@ -45,10 +45,19 @@ class ViduthalaiCrawler(Crawler):
                 log.debug(pformat(m))
                 month, year = m.groups()
         except:
-            log.exception()
+            log.exception('year and month extraction failed')
             
         return year, month
 
+
+    def url_filter(self, url):
+        url = url.split('#')[0]
+        for ext in ['.jpg', '.png', '.mp4']:
+            if url.endswith(ext):
+                return False
+            
+        return True
+    
     def process_page(self, page_name, soup):
         global uid_
         # remove all javascript and stylesheet code
