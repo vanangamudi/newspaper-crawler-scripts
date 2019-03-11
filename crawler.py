@@ -4,9 +4,13 @@ import os
 import re
 from tqdm import tqdm
 from bs4 import BeautifulSoup as bs
+from collections import defaultdict
+
 import requests
 import sys
 import time
+
+
 from pprint import pprint, pformat
 
 import config
@@ -41,7 +45,6 @@ def remove_everything_after_hashquestion(url):
     
 class Crawler(object):
 
-
     def __init__(self, root_url, root_dir='', prefix=PREFIX):
 
         verbose(prefix)
@@ -67,7 +70,7 @@ class Crawler(object):
             HTTP + self.ROOT_URL,
         ]
         
-        self.VISITED_LINKS = set()
+        self.VISITED_LINKS = defaultdict(int)
         self.DIRS          = [self.ROOT_DIR,
                               self.ARTICLES_DIR,
                               self.ABSTRACTS_DIR]
@@ -83,12 +86,16 @@ class Crawler(object):
             log.info('creating {}'.format(d))
             mkdir(d)
 
-        self.VISITED_LINKS = set()
         try:
             with open(self.VISITED_LINKS_FILEPATH, 'r') as f:
-                self.VISITED_LINKS = set(
-                    remove_everything_after_hashquestion(i) for i in f.readlines()
-                )
+                for i in f.readlines():
+                    items = remove_everything_after_hashquestion(i).split('|')
+                    if len(items) < 2:   # to account for prev versions, there is no count field
+                        link, count = items[0], '1'
+                    else:
+                        link, count = items
+                        
+                    self.VISITED_LINKS[link] = int(count)
                 
         except FileNotFoundError:
             open(self.VISITED_LINKS_FILEPATH, 'w').close()
@@ -117,7 +124,7 @@ class Crawler(object):
 
         for i in links_:
             i = remove_everything_after_hashquestion(i)
-            if i not in self.VISITED_LINKS and self.url_filter(i):
+            if i and i not in self.VISITED_LINKS and self.url_filter(i):
                 self.LINKS.append(i)
             
         return self.LINKS
@@ -130,7 +137,11 @@ class Crawler(object):
 
     def write_state(self):
         with open(self.VISITED_LINKS_FILEPATH, 'w') as f:
-            f.write('\n'.join(self.VISITED_LINKS))
+            f.write(
+                '\n'.join(
+                    [ '{}|{}'.format(k,v) for k,v in self.VISITED_LINKS.items()]
+                )
+            )
             
         with open(self.LINKS_FILEPATH, 'w') as f:
             f.write('\n'.join(self.LINKS))
@@ -169,7 +180,7 @@ class Crawler(object):
                     if self.CRAWLED_PAGE_COUNT > self.MAX_COUNT:
                         break
 
-                    self.VISITED_LINKS.add(current_link)
+                    self.VISITED_LINKS[current_link] += 1
 
                     try:
                         log.info('crawl_count: {}'.format(self.CRAWLED_PAGE_COUNT))
@@ -286,7 +297,7 @@ class MultiThreadedCrawler(Crawler):
                         break
                     
                     self.lock.acquire()
-                    self.VISITED_LINKS.add(current_link)
+                    self.VISITED_LINKS[current_link] += 1
                     self.lock.release()
                     
                     try:
