@@ -388,11 +388,30 @@ class MultiThreadedCrawler2(Crawler):
                     qin.task_done()
                 else:
                     time.sleep(1)
+                    
+            except KeyboardInterrupt:
+                qin.task_done()
+                raise KeyboardInterrupt
             except:
                 log.exception('page_download...')
                 qin.task_done()
+
+                
+            if stop_flag.is_set():
+                print('{} is stopping because of the flag'.format(threading.current_thread().name))
+                break
                 
     def fill_qin(self):
+        if len(self.LINKS) < 1:
+            print('links exhausted, restarting from root url')
+            self.LINKS = [
+                HTTP + self.ROOT_URL,
+            ]
+
+            if self.LINKS[0] in self.VISITED_LINKS:
+                del self.VISITED_LINKS[self.LINKS[0]]
+
+        num_links_to_load = min(self.MAX_COUNT - self.CRAWLED_PAGE_COUNT, self.QUEUE_SIZE)
         for i in range(self.QUEUE_SIZE):
             if len(self.LINKS) > 0:
                 current_link = self.LINKS.pop(0).strip()
@@ -412,18 +431,26 @@ class MultiThreadedCrawler2(Crawler):
             self.qin  = queue.Queue(    self.QUEUE_SIZE)
             self.qout = queue.Queue(2 * self.QUEUE_SIZE) #worse case scenario
 
+            self.stop_flag = threading.Event()
             
             self.fill_qin()  #fill qin before starting threads
-            threads = []
+            self.threads = []
             for i in range(self.NUM_THREADS):
                 verbose('starting thread {}'.format(i))
-                t = threading.Thread(target=self.page_download, args=(self.qin, self.qout))
-                threads.append(t)
+                t = threading.Thread(target=self.page_download,
+                                     args=(self.qin, self.qout, self.stop_flag))
+                self.threads.append(t)
                 t.start()
                 #time.sleep(1)
             
             #start threads
             while True:
+                
+                verbose(' Number to links:=')
+                verbose('  To be visited: {}'.format(len(self.LINKS)))
+                verbose('  Visited Links: {}'.format(len(self.VISITED_LINKS)))
+                verbose('  Crawled Count: {}'.format(self.CRAWLED_PAGE_COUNT))                        
+
                 #process the pages from qout
                 verbose('processing the last batch...')
                 while not self.qout.empty():
@@ -434,7 +461,7 @@ class MultiThreadedCrawler2(Crawler):
                         verbose('=========')
                         print('  Elapsed: {} :  Crawled Count: {}'.format(self.elapsed_period(),
                                                                           self.CRAWLED_PAGE_COUNT),
-                              end='\r' if config.CONFIG.VERBOSE else '\n')
+                              end='\r' if not config.CONFIG.VERBOSE else '\n')
                         
                         log.info('processing: {}'.format(current_link))
                         verbose('processing: {}'.format(current_link))
