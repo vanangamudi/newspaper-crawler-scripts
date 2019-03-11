@@ -504,7 +504,9 @@ class MultiThreadedCrawler2(Crawler):
                         self.CRAWLED_PAGE_COUNT += 1
                         
                     except KeyboardInterrupt:
+                        log.exception(current_link)
                         if stop_flag.is_set():
+                            print('stop flag is set, waiting for threads to stop')
                             alive_threads = live_threads(self.threads)
                             if alive_threads == 0 and self.qout.empty():
                                 raise KeyboardInterrupt
@@ -521,6 +523,7 @@ class MultiThreadedCrawler2(Crawler):
                     
                 alive_threads = live_threads(self.threads)
                 if alive_threads == 0 and self.qout.empty():
+                    print('stop flag is set, all threads stopped')
                     raise Exception
 
                 
