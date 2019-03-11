@@ -383,7 +383,7 @@ class MultiThreadedCrawler(Crawler):
 import queue
 class MultiThreadedCrawler2(Crawler):
 
-    def __init__(self, root_url, root_dir='', prefix=PREFIX, num_threads=4, queue_size=100, wait_time=1):
+    def __init__(self, root_url, root_dir='', prefix=PREFIX, num_threads=12, queue_size=200, wait_time=1):
         super().__init__(root_url, root_dir, prefix)
         self.NUM_THREADS = num_threads
         self.QUEUE_SIZE = queue_size
@@ -436,6 +436,9 @@ class MultiThreadedCrawler2(Crawler):
                 
                 if current_link not in self.VISITED_LINKS:
                     self.qin.put(current_link)
+
+            if self.qin.full():
+                break
                 
     def crawl(self):
         title_file = open(self.TITLE_LIST_FILEPATH, 'a')
