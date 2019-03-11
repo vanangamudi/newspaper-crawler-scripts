@@ -117,6 +117,8 @@ class Crawler(object):
                 links = list(set(f.readlines()))
                 for i in tqdm(links, desc='loading links'):
                     i = remove_everything_after_hashquestion(i)
+                    i = urllib.parse.unquote(i)
+                    
                     if  i not in self.VISITED_LINKS and self.url_filter(i):
                         self.LINKS.append(i)
                 print('loaded {} urls into self.LINKS'.format(len(self.LINKS)))
@@ -135,8 +137,11 @@ class Crawler(object):
                   for a in soup.find_all('a', href=True)]
 
         for i in links_:
+            i = i.strip()
             i = remove_everything_after_hashquestion(i)
-            if i and i not in self.VISITED_LINKS and self.url_filter(i):
+            i = urllib.parse.unquote(i)
+
+            if self.url_filter(i) and i not in self.VISITED_LINKS:
                 self.LINKS.append(i)
 
         self.LINKS = list(set(self.LINKS))
@@ -392,7 +397,7 @@ class MultiThreadedCrawler2(Crawler):
                     log.info('downloading: {}'.format(url))
                     page = requests.get('{}'.format(url))
                     soup = bs(page.content, 'html.parser')
-                    qout.put((url, soup))
+                    qout.put((threading.current_thread().name, url, soup))
                     qin.task_done()
                 else:
                     time.sleep(1)
@@ -463,9 +468,12 @@ class MultiThreadedCrawler2(Crawler):
                 verbose('processing the last batch...')
                 while not self.qout.empty():
                     try:
-                        current_link, soup = self.qout.get()
+                        thread_name, current_link, soup = self.qout.get()
+                        if current_link in self.VISITED_LINKS:
+                            print('duplicates found')
+
+                            
                         self.VISITED_LINKS[current_link] += 1
-                        current_link = urllib.parse.unquote(current_link)
                         verbose('=========')
                         print('  Elapsed: {} :  Crawled Count: {}'.format(self.elapsed_period(),
                                                                           self.CRAWLED_PAGE_COUNT),
