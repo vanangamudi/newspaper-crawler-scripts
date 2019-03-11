@@ -151,6 +151,9 @@ class Crawler(object):
         with open(self.LINKS_FILEPATH, 'w') as f:
             f.write('\n'.join(self.LINKS))
 
+        print('written {} links, {} visited_links to disk'.format(
+            len(self.LINKS), len(self.VISITED_LINKS)))
+            
         return True
 
     def url_filter(self, url):
@@ -230,8 +233,13 @@ class Crawler(object):
                     log.info('already visited {}'.format(current_link))
                     verbose('already visited')
 
+        except KeyboardInterrupt:
+            log.critical('keyboard interrupt')
+
         except:
             log.exception('###############')
+        finally:
+            print('finalizing execution, write state to the disk...')
             title_file.close()
             self.write_state()
 
