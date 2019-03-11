@@ -409,13 +409,6 @@ class MultiThreadedCrawler2(Crawler):
             
             #start threads
             while True:
-                #wait till the qin is empty
-                verbose('waiting till the threads finish the queue...')
-                self.qin.join()
-
-                #put 100 links in the qin and let the thread download them
-                self.fill_qin()
-                
                 #process the pages from qout
                 verbose('processing the last batch...')
                 while not self.qout.empty():
@@ -458,7 +451,14 @@ class MultiThreadedCrawler2(Crawler):
                     except:
                         log.exception(current_link)
                         self.write_state()
-                        
+
+                #wait till the qin is empty
+                verbose('waiting till the threads finish the queue...')
+                self.qin.join()
+
+                #put 100 links in the qin and let the thread download them
+                self.fill_qin()
+                                        
         except:
             log.exception('###############')
             title_file.close()
