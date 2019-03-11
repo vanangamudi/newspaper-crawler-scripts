@@ -130,7 +130,8 @@ class Crawler(object):
             i = remove_everything_after_hashquestion(i)
             if i and i not in self.VISITED_LINKS and self.url_filter(i):
                 self.LINKS.append(i)
-            
+
+        self.LINKS = list(set(self.LINKS))
         return self.LINKS
 
     def extract_year_month(self):
