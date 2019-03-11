@@ -364,17 +364,19 @@ class MultiThreadedCrawler(Crawler):
 
         except:
             log.exception('###############')
-            
-            
+        finally:
+            self.write_state()
+
 import queue
 class MultiThreadedCrawler2(Crawler):
 
-    def __init__(self, root_url, root_dir='', prefix=PREFIX, num_threads=12, queue_size=10):
+    def __init__(self, root_url, root_dir='', prefix=PREFIX, num_threads=4, queue_size=100, wait_time=1):
         super().__init__(root_url, root_dir, prefix)
         self.NUM_THREADS = num_threads
         self.QUEUE_SIZE = queue_size
-
-    def page_download(self, qin, qout):
+        self.WAIT_TIME = wait_time
+        
+    def page_download(self, qin, qout, stop_flag):
         while True:
             try:
                 if not qin.empty():
