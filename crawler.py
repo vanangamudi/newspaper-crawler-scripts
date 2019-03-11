@@ -496,20 +496,37 @@ class MultiThreadedCrawler2(Crawler):
                         self.CRAWLED_PAGE_COUNT += 1
                         
                     except KeyboardInterrupt:
-                        raise KeyboardInterrupt
-
+                        if stop_flag.is_set():
+                            alive_threads = live_threads(self.threads)
+                            if alive_threads == 0 and self.qout.empty():
+                                raise KeyboardInterrupt
+                        else:
+                            self.stop_flag.set()
+                                            
                     except:
                         log.exception(current_link)
                         self.write_state()
+                    
+                if self.CRAWLED_PAGE_COUNT > self.MAX_COUNT:
+                    print('crawled {} pages, now going to rest'.format(self.CRAWLED_PAGE_COUNT))
+                    self.stop_flag.set()
+                    
+                alive_threads = live_threads(self.threads)
+                if alive_threads == 0 and self.qout.empty():
+                    raise Exception
 
-                #wait till the qin is empty
-                verbose('waiting till the threads finish the queue...')
-                self.qin.join()
-
+                
+                #wait for some random number of seconds
+                time.sleep(self.WAIT_TIME)
+                
                 #put 100 links in the qin and let the thread download them
                 self.fill_qin()
                                         
         except:
             log.exception('###############')
+
+        finally:
+            print('finalizing...')
             title_file.close()
             self.write_state()
+            exit(0)
