@@ -42,7 +42,15 @@ def remove_everything_after_hashquestion(url):
     url = url.split('?')[0]
     url = url.split('#')[0]
     return url
-    
+
+def live_threads(threads):
+    alive_threads = 0
+    for t in threads:
+        if t.is_alive():
+            alive_threads += 1
+            
+    return alive_threads
+
 class Crawler(object):
 
     def __init__(self, root_url, root_dir='', prefix=PREFIX):
