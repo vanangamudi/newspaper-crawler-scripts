@@ -88,33 +88,37 @@ class Crawler(object):
 
         try:
             with open(self.VISITED_LINKS_FILEPATH, 'r') as f:
-                for i in f.readlines():
+                for i in tqdm(f.readlines(), desc='loading visited links'):
                     items = remove_everything_after_hashquestion(i).split('|')
                     if len(items) < 2:   # to account for prev versions, there is no count field
                         link, count = items[0], '1'
-                    else:
+                        
+                    elif len(items) == 2:
                         link, count = items
+                    else:
+                        print(items)
+                        continue
                         
                     self.VISITED_LINKS[link] = int(count)
-                
+            print('loaded {} urls into self.VISITED_LINKS'.format(len(self.VISITED_LINKS)))
         except FileNotFoundError:
             open(self.VISITED_LINKS_FILEPATH, 'w').close()
 
         try:
             with open(self.LINKS_FILEPATH, 'r') as f:
                 links = list(set(f.readlines()))
-                for i in links:
+                for i in tqdm(links, desc='loading links'):
                     i = remove_everything_after_hashquestion(i)
                     if  i not in self.VISITED_LINKS and self.url_filter(i):
                         self.LINKS.append(i)
-                
+                print('loaded {} urls into self.LINKS'.format(len(self.LINKS)))
         except FileNotFoundError:
             open(self.LINKS_FILEPATH, 'w').close()
 
     def url_check(self, a):
         log.debug(a)
-        if (a.startswith(HTTP + self.ROOT_URL)
-            or a.startswith(HTTPS + self.ROOT_URL)):
+        if (a.startswith(HTTP)
+            or a.startswith(HTTPS)):
             log.debug('returning true')
             return True
 
