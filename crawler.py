@@ -156,7 +156,12 @@ class Crawler(object):
         hours, rem = divmod(end-self.start_time, 3600)
         minutes, seconds = divmod(rem, 60)
         return "{:0>2}:{:0>2}:{:05.2f}".format(int(hours),int(minutes),seconds)
-        
+
+    def page_download(self, url):
+        page = requests.get('{}'.format(url))
+        soup = bs(page.content, 'html.parser')
+        return soup
+
     def crawl(self):
         title_file = open(self.TITLE_LIST_FILEPATH, 'a')
         self.start_time = time.time()
@@ -185,9 +190,7 @@ class Crawler(object):
                     try:
                         log.info('crawl_count: {}'.format(self.CRAWLED_PAGE_COUNT))
                         # access current link content
-                        page = requests.get('{}'.format(current_link))
-                        soup = bs(page.content, 'html.parser')
-
+                        soup = self.page_download(current_link)
                         # extract links
                         self.extract_links(soup)
                         
@@ -303,9 +306,7 @@ class MultiThreadedCrawler(Crawler):
                     try:
                         log.info('crawl_count: {}'.format(self.CRAWLED_PAGE_COUNT))
                         # access current link content
-                        page = requests.get('{}'.format(current_link))
-                        soup = bs(page.content, 'html.parser')
-
+                        soup = self.page_download(current_link)
                         # extract links
                         self.lock.acquire()
                         self.extract_links(soup)
