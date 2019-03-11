@@ -353,3 +353,113 @@ class MultiThreadedCrawler(Crawler):
             log.exception('###############')
             
             
+import queue
+class MultiThreadedCrawler2(Crawler):
+
+    def __init__(self, root_url, root_dir='', prefix=PREFIX, num_threads=12, queue_size=10):
+        super().__init__(root_url, root_dir, prefix)
+        self.NUM_THREADS = num_threads
+        self.QUEUE_SIZE = queue_size
+
+    def page_download(self, qin, qout):
+        while True:
+            try:
+                if not qin.empty():
+                    url = qin.get()
+                    log.info('downloading: {}'.format(url))
+                    page = requests.get('{}'.format(url))
+                    soup = bs(page.content, 'html.parser')
+                    qout.put((url, soup))
+                    qin.task_done()
+                else:
+                    time.sleep(1)
+            except:
+                log.exception('page_download...')
+                qin.task_done()
+                
+    def fill_qin(self):
+        for i in range(self.QUEUE_SIZE):
+            if len(self.LINKS) > 0:
+                current_link = self.LINKS.pop(0).strip()
+
+                log.debug(current_link)
+                if not self.url_check(current_link):
+                    current_link = HTTP + self.ROOT_URL + current_link
+                    log.debug(current_link)
+                
+                if current_link not in self.VISITED_LINKS:
+                    self.qin.put(current_link)
+                
+    def crawl(self):
+        title_file = open(self.TITLE_LIST_FILEPATH, 'a')
+        self.start_time = time.time()
+        try:
+            self.qin  = queue.Queue(    self.QUEUE_SIZE)
+            self.qout = queue.Queue(2 * self.QUEUE_SIZE) #worse case scenario
+
+            
+            self.fill_qin()  #fill qin before starting threads
+            threads = []
+            for i in range(self.NUM_THREADS):
+                verbose('starting thread {}'.format(i))
+                t = threading.Thread(target=self.page_download, args=(self.qin, self.qout))
+                threads.append(t)
+                t.start()
+                #time.sleep(1)
+            
+            #start threads
+            while True:
+                #wait till the qin is empty
+                verbose('waiting till the threads finish the queue...')
+                self.qin.join()
+
+                #put 100 links in the qin and let the thread download them
+                self.fill_qin()
+                
+                #process the pages from qout
+                verbose('processing the last batch...')
+                while not self.qout.empty():
+                    try:
+                        current_link, soup = self.qout.get()
+                        self.VISITED_LINKS[current_link] += 1
+                        current_link = urllib.parse.unquote(current_link)
+                        verbose('=========')
+                        print('  Elapsed: {} :  Crawled Count: {}'.format(self.elapsed_period(),
+                                                                          self.CRAWLED_PAGE_COUNT),
+                              end='\r' if config.CONFIG.VERBOSE else '\n')
+                        
+                        log.info('processing: {}'.format(current_link))
+                        verbose('processing: {}'.format(current_link))
+                        
+                        # extract links
+                        self.extract_links(soup)
+
+                        log.info('LINKS count:= {}'.format(len(self.LINKS)))
+                        verbose(' Number to links:=')
+                        verbose('  To be visited: {}'.format(len(self.LINKS)))
+                        verbose('  Visited Links: {}'.format(len(self.VISITED_LINKS)))
+                        verbose('  Crawled Count: {}'.format(self.CRAWLED_PAGE_COUNT))                        
+                        log.debug(pformat(self.LINKS))
+
+                        path_suffix, metadata_record, contents = self.process_page(current_link, soup)
+                        verbose('  path: {}'.format(path_suffix))
+                        for dir_, content in contents.items():
+                            with open('{}/{}'.format(dir_, path_suffix), 'w') as f:
+                                f.write('{}'.format(current_link))
+                                f.write('\n------------------\n')
+                                f.write(content)
+
+                        title_file.write(metadata_record + '\n')
+                        self.CRAWLED_PAGE_COUNT += 1
+                        
+                    except KeyboardInterrupt:
+                        raise KeyboardInterrupt
+
+                    except:
+                        log.exception(current_link)
+                        self.write_state()
+                        
+        except:
+            log.exception('###############')
+            title_file.close()
+            self.write_state()
