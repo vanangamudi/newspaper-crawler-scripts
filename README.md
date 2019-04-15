@@ -24,12 +24,13 @@ Scripts for more news websites are welcome. Please save the text scraped in UTF-
 ## Todo
 [ ] Extract common code into a decorator
 
-## Running the script
-Scripts are usually run under the directory where it lives, but the config.py file is the root directory.
+## Setup
 
-Please add `..` in PYTHONPATH so that, config in the root directory is accessible to the script. [ How's the crawler script ran ? #3](https://github.com/vanangamudi/newspaper-crawler-scripts/issues/3)
+`pip3 install -r requirements.txt`  
 
-`$ export PYTHONPATH=$PYTHONPATH:..`
+## Latest Script  
+
+`crawler-viduthalai4.py` under tamil uses the latest MultiThreadedCrawler2.
 
 ## Directory structure
 
