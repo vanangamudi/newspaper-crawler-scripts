@@ -8,9 +8,11 @@ import requests
 import sys
 import time
 from pprint import pprint, pformat
+import sys
+
+sys.path.append('../')
+
 import config
-
-
 from crawler import mkdir, verbose
 from crawler import Crawler, MultiThreadedCrawler2
 from crawler import HTTP, HTTPS
