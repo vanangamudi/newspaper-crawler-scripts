@@ -143,6 +143,8 @@ class DheshabhimaniCrawler(MultiThreadedCrawler2):
 
 
 if __name__ == '__main__':
+    # Deshabhimani is Creative Commons Attribution Licensed
+    # https://creativecommons.org/licenses/by/4.0/
     crawler = DheshabhimaniCrawler('www.deshabhimani.com', num_threads=12)
     crawler.initialize_dir_structure()
     crawler.crawl()
