@@ -50,7 +50,7 @@ class OneIndiaCrawler(MultiThreadedCrawler2):
             log.info(timestamp.text)
             if timestamp:
                 timestamp = timestamp.text.split()
-                print(timestamp)
+                #print(timestamp)
                 #month, year = timestamp[3], timestamp[5]
                 year = timestamp[5].replace(",", "")
                 month = timestamp[4].lower()
@@ -117,6 +117,7 @@ class OneIndiaCrawler(MultiThreadedCrawler2):
             page_content  = '\n'.join(p.text for p in paras)
             page_abstract = paras[0].text.strip()
             title         = soup.find('h1')
+            #print(title)
 
             breadcrumbs  = soup.find(class_='breadcrumb').findAll('a')
             breadcrumbs  = ','.join([b.text.replace('\n', '').replace('\r', '')
