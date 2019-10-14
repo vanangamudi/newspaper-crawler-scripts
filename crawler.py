@@ -31,12 +31,11 @@ def mkdir(path):
         log.info('created {}'.format(path))
         
 """
-Comment here
+used os.sep to make it easier for various platforms
+to use the code
+
 """
-# PREFIX = '{}/{}'.format(os.path.dirname(__file__), 'data')
 PREFIX = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-# print(PREFIX)
-# PREFIX = os.path.join(__file__)+ 'data'
 
 def verbose(*args, **kwargs):
     if config.CONFIG.VERBOSE:
@@ -64,7 +63,6 @@ class Crawler(object):
         
         self.ROOT_URL = root_url
         if root_dir:
-            print('hello', root_dir)
             root_dir = (os.sep).join(root_dir.split(os.sep)[-2:])
             root_dir = root_dir.replace('crawler-', '').replace('.py', '')
             print('root directory for storing data is {}'.format(root_dir))
