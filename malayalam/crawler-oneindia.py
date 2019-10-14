@@ -30,7 +30,7 @@ class OneIndiaCrawler(MultiThreadedCrawler2):
 
     def __init__(self, root_url, num_threads=1):
         root_dir= os.path.abspath(__file__)
-        root_dir = '/'.join(root_dir.split('/')[-2:])
+        root_dir = (os.sep).join(root_dir.split(os.sep)[-2:])
         root_dir = root_dir.replace('crawler-', '').replace('.py', '')
 
         verbose('root directory for storing data is {}'.format(root_dir))

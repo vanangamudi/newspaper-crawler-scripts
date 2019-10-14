@@ -30,8 +30,13 @@ def mkdir(path):
     if os.makedirs(path):
         log.info('created {}'.format(path))
         
-
-PREFIX = '{}/{}'.format(os.path.dirname(__file__), 'data')
+"""
+Comment here
+"""
+# PREFIX = '{}/{}'.format(os.path.dirname(__file__), 'data')
+PREFIX = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+# print(PREFIX)
+# PREFIX = os.path.join(__file__)+ 'data'
 
 def verbose(*args, **kwargs):
     if config.CONFIG.VERBOSE:
@@ -59,7 +64,8 @@ class Crawler(object):
         
         self.ROOT_URL = root_url
         if root_dir:
-            root_dir = '/'.join(root_dir.split('/')[-2:])
+            print('hello', root_dir)
+            root_dir = (os.sep).join(root_dir.split(os.sep)[-2:])
             root_dir = root_dir.replace('crawler-', '').replace('.py', '')
             print('root directory for storing data is {}'.format(root_dir))
         
@@ -67,12 +73,12 @@ class Crawler(object):
         else:
             self.ROOT_DIR = self.ROOT_URL.replace(HTTPS,'').replace(HTTP, '').split('/')[0]
         
-        self.LINKS_FILEPATH         = '{}/{}/links.list'         .format(prefix, self.ROOT_DIR)
-        self.VISITED_LINKS_FILEPATH = '{}/{}/visited-links.list' .format(prefix, self.ROOT_DIR)
+        self.LINKS_FILEPATH         = '{}{}{}{}links.list'         .format(prefix, os.sep, self.ROOT_DIR, os.sep)
+        self.VISITED_LINKS_FILEPATH = '{}{}{}{}visited-links.list' .format(prefix, os.sep, self.ROOT_DIR, os.sep)
         
-        self.TITLE_LIST_FILEPATH    = '{}/{}/title.csv'          .format(prefix, self.ROOT_DIR)
-        self.ARTICLES_DIR           = '{}/{}/articles'           .format(prefix, self.ROOT_DIR)
-        self.ABSTRACTS_DIR          = '{}/{}/abstracts'          .format(prefix, self.ROOT_DIR)
+        self.TITLE_LIST_FILEPATH    = '{}{}{}{}title.csv'          .format(prefix, os.sep, self.ROOT_DIR, os.sep)
+        self.ARTICLES_DIR           = '{}{}{}{}articles'           .format(prefix, os.sep, self.ROOT_DIR, os.sep)
+        self.ABSTRACTS_DIR          = '{}{}{}{}abstracts'          .format(prefix, os.sep, self.ROOT_DIR, os.sep)
 
         self.LINKS         = [
             HTTP + self.ROOT_URL,
@@ -225,7 +231,7 @@ class Crawler(object):
                         path_suffix, metadata_record, contents = self.process_page(current_link, soup)
                         verbose('  path: {}'.format(path_suffix))
                         for dir_, content in contents.items():
-                            with open('{}/{}'.format(dir_, path_suffix), 'w') as f:
+                            with open('{}{}{}'.format(dir_, os.sep, path_suffix), 'w') as f:
                                 f.write('{}'.format(current_link))
                                 f.write('\n------------------\n')
                                 f.write(content)
@@ -348,7 +354,7 @@ class MultiThreadedCrawler(Crawler):
                         path_suffix, metadata_record, contents = self.process_page(current_link, soup)
                         verbose('  path: {}'.format(path_suffix))
                         for dir_, content in contents.items():
-                            with open('{}/{}'.format(dir_, path_suffix), 'w') as f:
+                            with open('{}{}{}'.format(dir_, os.sep, path_suffix), 'w') as f:
                                 f.write('{}'.format(current_link))
                                 f.write('\n------------------\n')
                                 f.write(content)
@@ -498,7 +504,7 @@ class MultiThreadedCrawler2(Crawler):
                         path_suffix, metadata_record, contents = self.process_page(current_link, soup)
                         verbose('  path: {}'.format(path_suffix))
                         for dir_, content in contents.items():
-                            with open('{}/{}'.format(dir_, path_suffix), 'w') as f:
+                            with open('{}{}{}'.format(dir_, os.sep, path_suffix), 'w') as f:
                                 f.write('{}'.format(current_link))
                                 f.write('\n------------------\n')
                                 f.write(content)
