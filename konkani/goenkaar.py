@@ -93,8 +93,8 @@ uid_ = 0
 name = '{}'.format(uid_)
 def extract_year_month(page_link, soup):
     global uid_
-    year, month = '0000', '00'
-    timestamp = soup.find('meta', itemprop="datePublished")
+    ##year, month = '0000', '00'
+    ##timestamp = soup.find('meta', itemprop="datePublished")
 
     ##timestamp = timestamp.find_all('span')[1]
     ##log.info(timestamp.text)
@@ -120,7 +120,7 @@ def process_page(page_name, soup):
     for script in soup(["script", "style"]): 
         script.extract()
 
-    content = soup.find('p')
+    content = soup.find(class_="entry-content entry clearfix") 
     if not content:
         log.error('content extraction failed')
         log.error('{}'.format(page_name))
@@ -129,19 +129,19 @@ def process_page(page_name, soup):
         date = extract_year_month(page_name, soup)
         log.info('year, month = {}'.format(date))
 
-        m = re.search('{}\/([^\/]+)\/.*\/.*\/.*-(\d+).html'.format(ROOT_URL), page_name)
-        if m:
-            log.debug(pformat(m))
-            class_label, name = m.groups()
-        else:
-            uid_ += 1
-            name = '{}'.format(uid_)
+        ##m = re.search('{}\/([^\/]+)\/.*\/.*\/.*-(\d+).html'.format(ROOT_URL), page_name)
+        ##if m:
+        ##    log.debug(pformat(m))
+        ##    class_label, name = m.groups()
+        ##else:
+        ##    uid_ += 1
+        ##    name = '{}'.format(uid_)
             
 
         log.debug(content)
         paras = content.findAll('p')
         log.debug(pformat(paras))
-        path_suffix = '{}/{}.txt'.format(date, name)
+        path_suffix = '{}.txt'.format(date)
         with open('{}/{}'.format(ARTICLES_DIR, path_suffix), 'w') as f:
             f.write('{}\n------------------\n'.format(page_name))
             f.write('\n'.join(p.text for p in paras))
@@ -150,16 +150,16 @@ def process_page(page_name, soup):
             f.write('{}\n------------------\n'.format(page_name))
             f.write(paras[0].text)
             
-        title = soup.find('h1', class_='ArticleHead')
+        title = soup.find('h1', class_='post-title')
         log.info(title.text)
 
-        breadcrumbs = soup.find(class_='bcrums').findAll('a')
-        breadcrumbs = ','.join([b.text.replace('\n', '').replace('\r', '')
-                                for b in breadcrumbs])
-        log.info(breadcrumbs)
-        record = '{}|{}|{}|{}'.format(path_suffix, title.text,
-                                      class_label, breadcrumbs)
-        title_file.write(record + '\n')
+        ##breadcrumbs = soup.find(class_='bcrums').findAll('a')
+        ##breadcrumbs = ','.join([b.text.replace('\n', '').replace('\r', '')
+        ##                        for b in breadcrumbs])
+        ##log.info(breadcrumbs)
+        ##record = '{}|{}|{}|{}'.format(path_suffix, title.text,
+        ##                              class_label, breadcrumbs)
+        ##title_file.write(record + '\n')
         CRAWLED_PAGE_COUNT += 1
         
 
