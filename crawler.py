@@ -117,7 +117,7 @@ class Crawler(object):
             open(self.VISITED_LINKS_FILEPATH, 'w').close()
 
         try:
-            with open(self.LINKS_FILEPATH, 'r') as f:
+            with open(self.LINKS_FILEPATH, 'r', encoding='utf-8') as f:
                 links = list(set(f.readlines()))
                 for i in tqdm(links, desc='loading links'):
                     i = remove_everything_after_hashquestion(i)
@@ -158,14 +158,14 @@ class Crawler(object):
         raise NotImplemented
 
     def write_state(self):
-        with open(self.VISITED_LINKS_FILEPATH, 'w') as f:
+        with open(self.VISITED_LINKS_FILEPATH, 'w', encoding='utf-8') as f:
             f.write(
                 '\n'.join(
                     [ '{}|{}'.format(k,v) for k,v in self.VISITED_LINKS.items()]
                 )
             )
             
-        with open(self.LINKS_FILEPATH, 'w') as f:
+        with open(self.LINKS_FILEPATH, 'w', encoding='utf-8') as f:
             f.write('\n'.join(self.LINKS))
 
         print('written {} links, {} visited_links to disk'.format(
