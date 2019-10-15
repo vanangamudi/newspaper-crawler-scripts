@@ -17,7 +17,7 @@ log.setLevel(logging.INFO)
 
 MAX_COUNT = 1000000000000
 
-ROOT_DIR = 'konkani-kaniyo'
+ROOT_DIR = '../data/konkani/konkani-kaniyo'
 
 LINKS_FILEPATH         = '{}/links.list'.format(ROOT_DIR)
 VISITED_LINKS_FILEPATH = '{}/visited-links.list'.format(ROOT_DIR)
@@ -46,7 +46,7 @@ def mkdir(path):
 def url_check(a):
     log.debug(a)
     if (a.startswith(HTTP + ROOT_URL)
-        or a.startswith(HTTPS + ROOT_URL)):
+        or a.startswith(HTTPS + ROOT_URL)) and "comment" not in a and "?showComment" not in a: #to remove unnecessary comments
         log.debug('returning true')
         return True
 
