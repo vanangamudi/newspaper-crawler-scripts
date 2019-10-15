@@ -102,4 +102,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-marathi/.DS_Store
+.DS_Store
