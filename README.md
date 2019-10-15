@@ -30,7 +30,7 @@ Scripts for more news websites are welcome. Please save the text scraped in UTF-
 
 ## Latest Script  
 
-`crawler-viduthalai4.py` under tamil uses the latest MultiThreadedCrawler2.
+`crawler-oneindia.py` under malayalam has the latest code, you can use this a template for future crawlers.
 
 ## Directory structure
 
