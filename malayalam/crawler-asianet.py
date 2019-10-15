@@ -26,7 +26,7 @@ log.setLevel(config.CONFIG.LOGLEVEL)
 uid_ = 0
 name = '{}'.format(uid_)
     
-class OneIndiaCrawler(MultiThreadedCrawler2):
+class AsianetCrawler(MultiThreadedCrawler2):
 
     def __init__(self, root_url, num_threads=1):
         root_dir= os.path.abspath(__file__)
@@ -143,6 +143,6 @@ class OneIndiaCrawler(MultiThreadedCrawler2):
 
 
 if __name__ == '__main__':
-    crawler = OneIndiaCrawler('asianetnews.com', num_threads=12)
+    crawler = AsianetCrawler('asianetnews.com', num_threads=12)
     crawler.initialize_dir_structure()
     crawler.crawl()
