@@ -95,7 +95,7 @@ class Crawler(object):
             mkdir(d)
 
         try:
-            with open(self.VISITED_LINKS_FILEPATH, 'r') as f:
+            with open(self.VISITED_LINKS_FILEPATH, 'r', encoding='utf-8') as f:
                 for i in tqdm(f.readlines(), desc='loading visited links'):
                     items = remove_everything_after_hashquestion(i).split('|')
                     if len(items) < 2:   # to account for prev versions, there is no count field
@@ -113,7 +113,7 @@ class Crawler(object):
             open(self.VISITED_LINKS_FILEPATH, 'w').close()
 
         try:
-            with open(self.LINKS_FILEPATH, 'r') as f:
+            with open(self.LINKS_FILEPATH, 'r', encoding='utf-8') as f:
                 links = list(set(f.readlines()))
                 for i in tqdm(links, desc='loading links'):
                     i = remove_everything_after_hashquestion(i)
@@ -123,7 +123,7 @@ class Crawler(object):
                         self.LINKS.append(i)
                 print('loaded {} urls into self.LINKS'.format(len(self.LINKS)))
         except FileNotFoundError:
-            open(self.LINKS_FILEPATH, 'w').close()
+            open(self.LINKS_FILEPATH, 'w', encoding='utf-8').close()
 
     def url_check(self, a):
         log.debug(a)
@@ -154,14 +154,14 @@ class Crawler(object):
         raise NotImplemented
 
     def write_state(self):
-        with open(self.VISITED_LINKS_FILEPATH, 'w') as f:
+        with open(self.VISITED_LINKS_FILEPATH, 'w', encoding='utf-8') as f:
             f.write(
                 '\n'.join(
                     [ '{}|{}'.format(k,v) for k,v in self.VISITED_LINKS.items()]
                 )
             )
             
-        with open(self.LINKS_FILEPATH, 'w') as f:
+        with open(self.LINKS_FILEPATH, 'w', encoding='utf-8') as f:
             f.write('\n'.join(self.LINKS))
 
         print('written {} links, {} visited_links to disk'.format(
