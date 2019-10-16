@@ -17,6 +17,13 @@ Set of scripts for crawling newspaper websites. Please find the available script
 |--------------------|--------------------------------|--------------------------------------|
 |  Manorama          | http://www.manoramaonline.com/ | malayalam/crawler-manorama.py        |
 
+### Bengali
+| Site                   | URL                         | script                                |
+|------------------------|-----------------------------|---------------------------------------|
+|  Ananadabazar          | https://www.anandabazar.com | Bengali/crawler-anandabazar.py        |
+|  Aajkal                | https://www.aajkaal.in      | Bengali/crawler-aajkal.py             |
+
+
 
 ### Konkani
 | Site               | URL                            | script                               |
