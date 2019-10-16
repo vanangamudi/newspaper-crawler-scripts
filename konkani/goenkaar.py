@@ -107,8 +107,8 @@ def extract_year_month(page_link, soup):
     content=map(lambda x:x.attrs,metas)
     date = list(content)[0]['content']
         
-    for d in SUBDIRS:
-        mkdir('{}'.format(date))
+    ##for d in SUBDIRS:
+    ##    mkdir('{}/{}'.format(ROOT_DIR,date))
             
     return date
 
@@ -150,7 +150,7 @@ def process_page(page_name, soup):
             f.write('{}\n------------------\n'.format(page_name))
             f.write(paras[0].text)
             
-        title = soup.find('h1', class_='post-title')
+        title = soup.find('h1', class_='entry-title')
         log.info(title.text)
 
         ##breadcrumbs = soup.find(class_='bcrums').findAll('a')
@@ -159,7 +159,7 @@ def process_page(page_name, soup):
         ##log.info(breadcrumbs)
         ##record = '{}|{}|{}|{}'.format(path_suffix, title.text,
         ##                              class_label, breadcrumbs)
-        ##title_file.write(record + '\n')
+        title_file.write(title.text + '\n')
         CRAWLED_PAGE_COUNT += 1
         
 
