@@ -26,7 +26,7 @@ log.setLevel(config.CONFIG.LOGLEVEL)
 uid_ = 0
 name = '{}'.format(uid_)
     
-class DheshabhimaniCrawler(MultiThreadedCrawler2):
+class AsianetCrawler(MultiThreadedCrawler2):
 
     def __init__(self, root_url, num_threads=1):
         root_dir= os.path.abspath(__file__)
@@ -46,14 +46,14 @@ class DheshabhimaniCrawler(MultiThreadedCrawler2):
         year, month = '0000', '00'
 
         try:
-            timestamp = soup.find(class_='db-postDtls')
+            timestamp = soup.find(class_='date')
             log.info(timestamp.text)
-            m = re.search('.*Updated: (.*) (.*) (.*), (.*)', timestamp.text.strip())
-            if m:
-                log.debug(pformat(m))
-                g = m.groups()
-                month = g[1].lower()
-                year = g[3]
+            if timestamp:
+                timestamp = timestamp.text.split()
+                #print(timestamp)
+                #month, year = timestamp[3], timestamp[5]
+                year = timestamp[5].replace(",", "")
+                month = timestamp[4].lower()
         except:
             log.exception('year and month extraction failed')
             
@@ -87,7 +87,7 @@ class DheshabhimaniCrawler(MultiThreadedCrawler2):
         for script in soup(["script", "style"]): 
             script.extract()
 
-        content = soup.find(class_='db-contentScn')
+        content = soup.find(class_='article-content')
 
         if not content:
             log.error('content extraction failed')
@@ -118,11 +118,11 @@ class DheshabhimaniCrawler(MultiThreadedCrawler2):
             page_abstract = paras[0].text.strip()
             title         = soup.find('h1')
 
-            breadcrumbs  = soup.find(class_='breadCrums').findAll('a')
+            breadcrumbs  = soup.find(class_='breadcrumb').findAll('a')
             breadcrumbs  = ','.join([b.text.replace('\n', '').replace('\r', '')
                                 for b in breadcrumbs])
 
-            tags = soup.find(class_='tglst').findAll('a')
+            tags = soup.find(class_='tag-box').findAll('a')
             tags = ','.join([b.text.replace('\n', '').replace('\r', '')
                                 for b in tags])
                                 
@@ -143,8 +143,6 @@ class DheshabhimaniCrawler(MultiThreadedCrawler2):
 
 
 if __name__ == '__main__':
-    # Deshabhimani is Creative Commons Attribution Licensed
-    # https://creativecommons.org/licenses/by/4.0/
-    crawler = DheshabhimaniCrawler('www.deshabhimani.com', num_threads=12)
+    crawler = AsianetCrawler('asianetnews.com', num_threads=12)
     crawler.initialize_dir_structure()
     crawler.crawl()

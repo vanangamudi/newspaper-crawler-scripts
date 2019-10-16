@@ -19,13 +19,13 @@ MAX_COUNT = 1000000000000
 
 ROOT_DIR = 'manorama'
 
-LINKS_FILEPATH         = '{}/links.list'.format(ROOT_DIR)
-VISITED_LINKS_FILEPATH = '{}/visited-links.list'.format(ROOT_DIR)
+LINKS_FILEPATH         = '{}{}links.list'.format(ROOT_DIR, os.sep)
+VISITED_LINKS_FILEPATH = '{}{}visited-links.list'.format(ROOT_DIR, os.sep)
 
-TITLE_LIST_FILEPATH    = '{}/title.csv'        .format(ROOT_DIR)
-ARTICLES_DIR           = '{}/articles'          .format(ROOT_DIR)
-ABSTRACTS_DIR          = '{}/abstracts'         .format(ROOT_DIR)
-COMMENTS_DIR           = '{}/comments'          .format(ROOT_DIR)
+TITLE_LIST_FILEPATH    = '{}{}title.csv'        .format(ROOT_DIR, os.sep)
+ARTICLES_DIR           = '{}{}articles'          .format(ROOT_DIR, os.sep)
+ABSTRACTS_DIR          = '{}{}abstracts'         .format(ROOT_DIR, os.sep)
+COMMENTS_DIR           = '{}{}comments'          .format(ROOT_DIR, os.sep)
 
 HTTP = 'http://'
 HTTPS = 'https://'
