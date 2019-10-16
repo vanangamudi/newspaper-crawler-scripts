@@ -16,6 +16,9 @@ Set of scripts for crawling newspaper websites. Please find the available script
 | Site               | URL                            | script                               |
 |--------------------|--------------------------------|--------------------------------------|
 |  Manorama          | http://www.manoramaonline.com/ | malayalam/crawler-manorama.py        |
+|  Asianet News      | https://www.asianetnews.com/   | malayalam/crawler-asianet.py         |
+|  One India         | https://malayalam.oneindia.com/| malayalam/crawler-oneindia.py        |
+
 
 ### Bengali
 | Site                   | URL                         | script                                |
