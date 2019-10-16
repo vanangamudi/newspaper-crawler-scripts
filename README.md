@@ -17,10 +17,17 @@ Set of scripts for crawling newspaper websites. Please find the available script
 |--------------------|--------------------------------|--------------------------------------|
 |  Manorama          | http://www.manoramaonline.com/ | malayalam/crawler-manorama.py        |
 
+
 ### Konkani
 | Site               | URL                            | script                               |
 |--------------------|--------------------------------|--------------------------------------|
 |  Konkani Kaniyo          | http://konkani-kaniyo-in-nagri.blogspot.com | konkani/crawler-konkani-kaniyo.py        |
+
+
+### Marathi
+| Site               | URL                            | script                               |
+|--------------------|--------------------------------|--------------------------------------|
+|  Lokmat            | http://www.lokmat.com/         | marathi/crawler-lokmat.py            |
 
 
 ## Contribute
