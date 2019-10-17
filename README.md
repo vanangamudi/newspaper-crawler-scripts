@@ -18,9 +18,10 @@ Set of scripts for crawling newspaper websites. Please find the available script
 |  Manorama          | http://www.manoramaonline.com/ | malayalam/crawler-manorama.py        |
 
 ### Marathi
-| Site               | URL                            | script                               |
-|--------------------|--------------------------------|--------------------------------------|
-|  Lokmat            | http://www.lokmat.com/         | marathi/crawler-lokmat.py            |
+| Site               | URL                                            | script                               |
+|--------------------|------------------------------------------------|--------------------------------------|
+|  Lokmat            | http://www.lokmat.com/                         | marathi/crawler-lokmat.py            |
+|  Maharashtratimes  | https://maharashtratimes.indiatimes.com/       | marathi/crawler-maharashtratimes.py  |
 
 ## Contribute
 Scripts for more news websites are welcome. Please save the text scraped in UTF-8 encoding. Please refer to the [newspapers list file](https://github.com/vanangamudi/newspaper-crawler-scripts/blob/master/newspapers.csv) and pick one to scrape.
