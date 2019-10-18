@@ -34,11 +34,12 @@ Set of scripts for crawling newspaper websites. Please find the available script
 |  Konkani Kaniyo          | http://konkani-kaniyo-in-nagri.blogspot.com | konkani/crawler-konkani-kaniyo.py        |
 
 
-### Marathi
+### Marathi 
 | Site               | URL                                            | script                               |
 |--------------------|------------------------------------------------|--------------------------------------|
 |  Lokmat            | http://www.lokmat.com/                         | marathi/crawler-lokmat.py            |
 |  Maharashtratimes  | https://maharashtratimes.indiatimes.com/       | marathi/crawler-maharashtratimes.py  |
+|  Loksatta          | https://www.loksatta.com                       | marathi/crawler-loksatta.py          |
 
 
 ## Contribute
