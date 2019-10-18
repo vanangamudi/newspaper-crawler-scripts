@@ -27,7 +27,7 @@ uid_ = 0
 name = '{}'.format(uid_)
 
 
-class LokmatCrawler(MultiThreadedCrawler2):
+class LoksattaCrawler(MultiThreadedCrawler2):
 
     def __init__(self, root_url, num_threads=1):
         root_dir = os.path.abspath(__file__)
@@ -146,6 +146,6 @@ class LokmatCrawler(MultiThreadedCrawler2):
 
 if __name__ == '__main__':
     # Keeping one thread for debugging
-    crawler = LokmatCrawler('www.loksatta.com', num_threads=1)
+    crawler = LoksattaCrawler('www.loksatta.com', num_threads=1)
     crawler.initialize_dir_structure()
     crawler.crawl()
