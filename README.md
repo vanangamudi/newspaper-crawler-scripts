@@ -35,9 +35,10 @@ Set of scripts for crawling newspaper websites. Please find the available script
 
 
 ### Marathi
-| Site               | URL                            | script                               |
-|--------------------|--------------------------------|--------------------------------------|
-|  Lokmat            | http://www.lokmat.com/         | marathi/crawler-lokmat.py            |
+| Site               | URL                                            | script                               |
+|--------------------|------------------------------------------------|--------------------------------------|
+|  Lokmat            | http://www.lokmat.com/                         | marathi/crawler-lokmat.py            |
+|  Maharashtratimes  | https://maharashtratimes.indiatimes.com/       | marathi/crawler-maharashtratimes.py  |
 
 
 ## Contribute
