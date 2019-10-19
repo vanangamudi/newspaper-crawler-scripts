@@ -16,6 +16,30 @@ Set of scripts for crawling newspaper websites. Please find the available script
 | Site               | URL                            | script                               |
 |--------------------|--------------------------------|--------------------------------------|
 |  Manorama          | http://www.manoramaonline.com/ | malayalam/crawler-manorama.py        |
+|  Asianet News      | https://www.asianetnews.com/   | malayalam/crawler-asianet.py         |
+|  One India         | https://malayalam.oneindia.com/| malayalam/crawler-oneindia.py        |
+
+
+### Bengali
+| Site                   | URL                         | script                                |
+|------------------------|-----------------------------|---------------------------------------|
+|  Ananadabazar          | https://www.anandabazar.com | Bengali/crawler-anandabazar.py        |
+|  Aajkal                | https://www.aajkaal.in      | Bengali/crawler-aajkal.py             |
+
+
+
+### Konkani
+| Site               | URL                            | script                               |
+|--------------------|--------------------------------|--------------------------------------|
+|  Konkani Kaniyo          | http://konkani-kaniyo-in-nagri.blogspot.com | konkani/crawler-konkani-kaniyo.py        |
+
+
+### Marathi 
+| Site               | URL                                            | script                               |
+|--------------------|------------------------------------------------|--------------------------------------|
+|  Lokmat            | http://www.lokmat.com/                         | marathi/crawler-lokmat.py            |
+|  Maharashtratimes  | https://maharashtratimes.indiatimes.com/       | marathi/crawler-maharashtratimes.py  |
+|  Loksatta          | https://www.loksatta.com                       | marathi/crawler-loksatta.py          |
 
 
 ### Konkani
