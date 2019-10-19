@@ -42,6 +42,11 @@ Set of scripts for crawling newspaper websites. Please find the available script
 |  Loksatta          | https://www.loksatta.com                       | marathi/crawler-loksatta.py          |
 
 
+### Konkani
+| Site               | URL                            | script                               |
+|--------------------|--------------------------------|--------------------------------------|
+|  Goenkaar          | http://goenkaar.com/ | konkani/goenkaar.py        |
+
 ## Contribute
 Scripts for more news websites are welcome. Please save the text scraped in UTF-8 encoding. Please refer to the [newspapers list file](https://github.com/vanangamudi/newspaper-crawler-scripts/blob/master/newspapers.csv) and pick one to scrape.
 
