@@ -40,6 +40,7 @@ Set of scripts for crawling newspaper websites. Please find the available script
 |  Lokmat            | http://www.lokmat.com/                         | marathi/crawler-lokmat.py            |
 |  Maharashtratimes  | https://maharashtratimes.indiatimes.com/       | marathi/crawler-maharashtratimes.py  |
 |  Loksatta          | https://www.loksatta.com                       | marathi/crawler-loksatta.py          |
+|  ABPmajha          | https://abpmajha.abplive.in                    | marathi/crawler-abpmajha.py          |
 
 
 ## Contribute
