@@ -1,5 +1,5 @@
 # Newspaper Crawler Scripts
-Set of scripts for crawling newspaper websites. Please find the available scripts below
+Set of scripts for crawling Newspapers Websites. Please find the available scripts below
 
 ## Setup
 
@@ -17,7 +17,7 @@ Scripts for more news websites are welcome. Please save the text scraped in UTF-
 
 `crawler-oneindia.py` under malayalam has the latest code, you can use this a template for future crawlers.
 
-## Directory structure
+## Directory Structure
 
     <newspaper_name>
       title.list --> acts as a index for other directories.
@@ -45,7 +45,7 @@ Scripts for more news websites are welcome. Please save the text scraped in UTF-
 
 
 ## Available scripts.
-### Tamil
+### Tamil  ###
 | Site               | URL                            | script                               |
 |--------------------|--------------------------------|--------------------------------------|
 |  Nakkheeran        | http://nakkheeran.in/          | tamil/crawler-nakkheeran.py          |
@@ -55,7 +55,7 @@ Scripts for more news websites are welcome. Please save the text scraped in UTF-
 | Dinamani           | http://dinamani.com/           |  tamil/crawler-dinamani.py           |
 
 
-### Malayalam
+### Malayalam ###
 | Site               | URL                            | script                               |
 |--------------------|--------------------------------|--------------------------------------|
 |  Manorama          | http://www.manoramaonline.com/ | malayalam/crawler-manorama.py        |
@@ -63,7 +63,7 @@ Scripts for more news websites are welcome. Please save the text scraped in UTF-
 |  One India         | https://malayalam.oneindia.com/| malayalam/crawler-oneindia.py        |
 
 
-### Bengali
+### Bengali ###
 | Site                   | URL                         | script                                |
 |------------------------|-----------------------------|---------------------------------------|
 |  Ananadabazar          | https://www.anandabazar.com | Bengali/crawler-anandabazar.py        |
