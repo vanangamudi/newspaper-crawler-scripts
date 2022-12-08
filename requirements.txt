@@ -1,7 +1,7 @@
 astroid==2.1.0
 beautifulsoup4==4.6.3
 bs4==0.0.1
-certifi==2018.8.24
+certifi==2022.12.7
 chardet==3.0.4
 Fuzzy==1.2.2
 idna==2.7
